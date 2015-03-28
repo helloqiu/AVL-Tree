@@ -1,10 +1,19 @@
 /*
 Date : 2015-3-27-21:01
-Author : ÕÅÓîÑô(heheda | helloqiu)
+Author : å¼ å®‡é˜³(heheda | helloqiu)
 Description : AVL tree
+
 Date : 2015-3-27-23:46
-Author : ÕÅÓîÑô(heheda | helloqiu)
+Author : å¼ å®‡é˜³(heheda | helloqiu)
 Description : Something goes wrong with AVL's xuanzhuan>_<and i'm too tired to point it out>_<
+
+Date : 2015-3-28-18:21
+Author : å¼ å®‡é˜³(heheda | helloqiu)
+Description : Begin to solve the problem
+
+Date : 2015-3-28-19:06
+Author : å¼ å®‡é˜³(heheda | helloqiu)
+Description : Problem solved.It's seemed to be alright.But how about the Delete?
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,8 +54,8 @@ int main(void)
             break;
         }
         rootnode = NodeInsert(rootnode , node);
-        //printf("Here is the tree : \n");
-        //PrintNode(rootnode , 0 , rootnode -> data);
+        printf("Here is the tree : \n");
+        PrintNode(rootnode , 0 , rootnode -> data);
     }while(1);
     printf("Here is the tree : \n");
     PrintNode(rootnode , 0 , rootnode -> data);
@@ -59,7 +68,7 @@ static Node CreatNode(Node left , Node right , int data){
     node -> data = data;
     node -> left = left;
     node -> right = right;
-    node -> height = 0;
+    node -> height = 1;
     return node;
 }
 
@@ -78,6 +87,9 @@ static Node LL(Node rootnode){
     node -> right = rootnode;
     rootnode -> height = MAX(Height(rootnode -> left) , Height(rootnode -> right)) + 1;
     node -> height = MAX(Height(node -> left) , Height(node -> right)) + 1;
+
+    printf("do a LL in node %d\n" , rootnode -> data);
+
     return node;
 }
 static Node RR(Node rootnode){
@@ -87,15 +99,24 @@ static Node RR(Node rootnode){
     node -> left = rootnode;
     rootnode -> height = MAX(Height(rootnode -> left) , Height(rootnode -> right)) + 1;
     node -> height = MAX(Height(node -> left) , Height(node -> right)) + 1;
+
+    printf("do a RR in node %d\n" , rootnode -> data);
+
     return node;
 }
 static Node LR(Node rootnode){
+
+    printf("do a LR in node %d\n" , rootnode -> data);
+
     rootnode -> left = RR(rootnode -> left);
     return LL(rootnode);
 }
 static Node RL(Node rootnode){
+
+    printf("do a RL in node %d\n" , rootnode -> data);
+
     rootnode -> right = LL(rootnode -> right);
-    return LL(rootnode);
+    return RR(rootnode);
 }
 Node NodeInsert(Node rootnode , int data){
     if (rootnode == NULL){
@@ -109,11 +130,11 @@ Node NodeInsert(Node rootnode , int data){
         rootnode -> left = NodeInsert(rootnode -> left , data);
         rootnode -> height = MAX(Height(rootnode -> left) , Height(rootnode -> right)) + 1;
         //lose balance
-        int rightheight = -1;
+        int rightheight = 0;
         if (rootnode -> right != NULL){
             rightheight = rootnode -> right ->height;
         }
-        if (Height(rootnode -> left) == rightheight + 2){
+        if (Height(rootnode -> left) >= rightheight + 2){
             if (data < rootnode -> left -> data){
                 rootnode = LL(rootnode);
             }else{
@@ -125,11 +146,11 @@ Node NodeInsert(Node rootnode , int data){
             rootnode -> right = NodeInsert(rootnode -> right , data);
             rootnode -> height = MAX(Height(rootnode -> left) , Height(rootnode -> right)) + 1;
             //lose balance
-            int leftheight = -1;
+            int leftheight = 0;
             if (rootnode -> left != NULL){
                 leftheight = rootnode -> left -> height;
             }
-            if (Height(rootnode -> right) == leftheight + 2){
+            if (Height(rootnode -> right) >= leftheight + 2){
                 if (data > rootnode -> right -> data){
                     rootnode = RR(rootnode);
                 }else{
@@ -138,7 +159,7 @@ Node NodeInsert(Node rootnode , int data){
             }
         }
     }
-    //rootnode -> height = MAX(Height(rootnode -> left) , Height(rootnode -> right)) + 1;
+    rootnode -> height = MAX(Height(rootnode -> left) , Height(rootnode -> right)) + 1;
     return rootnode;
 }
 static Node NodeDelete(Node rootnode , Node delnode){
